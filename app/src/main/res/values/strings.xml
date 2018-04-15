@@ -3,4 +3,13 @@
     <string name="tab1">Weight</string>
     <string name="tab2">Workout</string>
     <string name="tab3">IDK</string>
+    <string name="exercise0">Squats</string>
+    <string name="exercise1">Deadlift</string>
+    <string name="exercise2">Bench Press</string>
+    <string name="exercise3">OHP</string>
+    <string name="exercise4">Row</string>
+    <string name="exercise5">Pull-ups</string>
+    <string name="exercise6">Dips</string>
+    <string name="exercise7">Triceps</string>
+    <string name="exercise8">Biceps</string>
 </resources>
