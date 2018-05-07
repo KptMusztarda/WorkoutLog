@@ -97,15 +97,14 @@ public class MainActivity extends Activity {
         spec.setIndicator(res.getString(R.string.tab3));
         host.addTab(spec);
 
-        data = new Data(PATH,FILENAME);
-        data.loadData();
+        Data.initializeFile(PATH, FILENAME);
+        Data.loadData();
 
         button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(activity, Workout.class);
-                intent.putExtra("Data", data);
                 startActivity(intent);
             }
         });

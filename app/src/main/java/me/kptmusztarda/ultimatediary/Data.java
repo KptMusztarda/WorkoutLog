@@ -1,7 +1,5 @@
 package me.kptmusztarda.ultimatediary;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -18,11 +16,12 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class Data implements Parcelable {
+public class Data {
 
-    private List<Day> days;
-    private String path;
-    private String name;
+    private static List<Day> days = new ArrayList<>();
+    private static int setId = 0;
+    private static String path;
+    private static String name;
 
     private static Locale LOCALE = Locale.getDefault();
     private static final String TAG = MainActivity.class.getName();
@@ -30,43 +29,6 @@ public class Data implements Parcelable {
     private static final int DATE = 0;
     private static final int WORKOUT_DATA = 1;
     private static final int BODY_WEIGHT = 2;
-
-    protected Data(Parcel in){
-        days = new ArrayList<>();
-        in.readList(days, Day.class.getClassLoader());
-        initializeFile(in.readString(),in.readString());
-    }
-
-
-    protected Data(String path, String name) {
-        days = new ArrayList<>();
-        this.path = path;
-        this.name = name;
-        initializeFile(path, name);
-    }
-
-    protected List<Day> getDays() {
-        return days;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeList(days);
-        dest.writeString(path);
-        dest.writeString(name);
-    }
-
-    public int describeContents() {return 0;}
-
-    public static final Parcelable.Creator<Data> CREATOR = new Parcelable.Creator<Data>(){
-        public Data createFromParcel(Parcel in) {
-            return new Data(in);
-        }
-
-        public Data[] newArray(int size) {
-            return new Data[size];
-        }
-    };
 
     protected static void appendToFile(int type, String data){
         try {
@@ -84,9 +46,8 @@ public class Data implements Parcelable {
         }
         Log.i(TAG,"File written to " + file);
     }
-
-    protected void loadData() {
-        days.clear();
+    protected static void loadData() {
+        if (days != null) days.clear();
         try {
             InputStream is = new FileInputStream(file);
             InputStreamReader isr = new InputStreamReader(is);
@@ -150,8 +111,7 @@ public class Data implements Parcelable {
             e.printStackTrace();
         }
     }
-
-    protected void initializeFile(String path, String name) {
+    protected static void initializeFile(String path, String name) {
         File root = android.os.Environment.getExternalStorageDirectory();
         System.out.println("External file system root: " + root);
 
@@ -167,7 +127,6 @@ public class Data implements Parcelable {
             }
         }
     }
-
     protected static String trimZeros(float f) {
         if(f == (long) f)
             return String.format(LOCALE,"%d",(long)f);
@@ -175,4 +134,30 @@ public class Data implements Parcelable {
             return String.format("%s",f);
     }
 
+    protected static List<Day> getDays() {return days;}
+    protected static Set getLastSet(int id) {
+        Set toReturn = null;
+        outerLoop:
+        for(int i=days.size()-1; i>=0; i--) {
+            List<Set> sets = days.get(i).getSets();
+            for (int j = sets.size()-1; j>=0; j--) if(sets.get(j).getExerciseId() == id) {
+                toReturn = sets.get(j);
+                break outerLoop;
+            }
+        }
+        return toReturn;
+    }
+    protected static void incrementSetId() {setId++;}
+    protected static int getLastSetId() {return setId;}
+    protected static Set getSetById(int id) {
+        Set toReturn = null;
+        outerLoop:
+        for(Day day : days) {
+            for (Set set : day.getSets()) if(set.getId() == id) {
+                toReturn = set;
+                break outerLoop;
+            }
+        }
+        return toReturn;
+    }
 }

@@ -32,13 +32,10 @@ public class Exercises extends Application{
         }};
     }
 
-
     protected static int getCount() {
         return names.size();
     }
-
     protected static String getName(int id) {
         return names.get(id);
     }
-
 }

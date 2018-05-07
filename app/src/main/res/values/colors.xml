@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="page_indicator_selected_color">#FF4081</color>
-    <color name="page_indicator_default_color">#303F9F</color>
+    <color name="primary">#585858</color>
+    <color name="secondary">#6c6c6c</color>
+    <color name="accent">#ff772e</color>
 </resources>

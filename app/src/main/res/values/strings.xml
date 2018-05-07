@@ -3,6 +3,12 @@
     <string name="tab1">Weight</string>
     <string name="tab2">Workout</string>
     <string name="tab3">IDK</string>
+    <string name="add_set">Add set</string>
+    <string name="edit_set">Edit set</string>
+    <string name="increment0">1.25 kg</string>
+    <string name="increment1">2.5 kg</string>
+    <string name="increment2">5 kg</string>
+    <string name="increment3">10 kg</string>
     <string name="exercise0">Squats</string>
     <string name="exercise1">Deadlift</string>
     <string name="exercise2">Bench Press</string>
