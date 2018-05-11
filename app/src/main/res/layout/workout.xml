@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary"
@@ -12,10 +13,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
         android:text="@string/add_set"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/reps"
-        app:layout_constraintStart_toStartOf="@+id/reps"
+        app:layout_constraintEnd_toEndOf="@+id/repsplus"
+        app:layout_constraintStart_toStartOf="@+id/repsminus"
         app:layout_constraintTop_toBottomOf="@+id/reps" />
 
     <EditText
@@ -167,5 +169,16 @@
             android:layout_weight="1"
             android:text="@string/increment3" />
     </RadioGroup>
+
+    <Button
+        android:id="@+id/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@android:string/cancel"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/addset"
+        app:layout_constraintEnd_toStartOf="@+id/addset"
+        app:layout_constraintTop_toTopOf="@+id/addset" />
 
 </android.support.constraint.ConstraintLayout>

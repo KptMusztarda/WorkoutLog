@@ -8,10 +8,12 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -22,39 +24,39 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
 
 public class Workout extends Activity {
 
-    private Button addset, weightp, weightm, repsp, repsm;
-    private int selectedExerciseId;
-    private float increment = 2.5f;
+    private Button addset, weightp, weightm, repsp, repsm, cancel;
     private EditText weight, reps;
     private LinearLayout[] scroll;
-    private boolean[] newDatePrinted;
-    private TextView tView;
+    private ConstraintLayout constraintLayout;
+    private TextView modifiedTView;
     private RadioGroup radioGroup;
-    private RadioButton radioButton;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private boolean inEditMode = false;
 
+    private boolean inEditMode = false;
+    private int selectedExerciseId;
+    private float increment = 2.5f;
     private List<Day> days;
+    private Set modifiedSet;
 
     private Locale LOCALE = Locale.getDefault();
     private static final String TAG = MainActivity.class.getName();
     private String DATE_FORMAT = "dd/MM/YYYY";
 
     private void createDateRow(int pos, Calendar date) {
-        tView = new TextView(getApplicationContext());
+        TextView tView = new TextView(getApplicationContext());
         tView.setText(String.format(LOCALE, "-%dd %s",
                 (Calendar.getInstance(LOCALE).getTimeInMillis() - date.getTimeInMillis()) / (24 * 60 * 60 * 1000),
                 new SimpleDateFormat(DATE_FORMAT, LOCALE).format(date.getTime())
         ));
         scroll[pos].addView(tView, (new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT)));
     }
-
     private void createWorkoutRow(int pos, final Set s) {
-        tView = new TextView(getApplicationContext());
+        final TextView tView = new TextView(getApplicationContext());
         tView.setTag(s.getId());
         tView.setText(String.format(LOCALE, "%sx%d",
                 Data.trimZeros(s.getWeight()),
@@ -65,33 +67,47 @@ public class Workout extends Activity {
             public boolean onLongClick(View view) {
                 inEditMode = true;
                 Log.i(TAG, "set = " + s.getWeight() + "x" + s.getReps());
-                tView.setBackgroundColor(getResources().getColor(R.color.primary));
-                //Set ss = Data.getSetById(s.getId());
+                tView.setBackgroundColor(getResources().getColor(R.color.accent));
+                weight.setText(Float.toString(s.getWeight()));
+                reps.setText(Integer.toString(s.getReps()));
+                addset.setText(getResources().getText(R.string.edit_set));
+                cancel.setVisibility(View.VISIBLE);
+                updateEditTexts(s);
+                modifiedSet = s;
+                if(modifiedTView != null) modifiedTView.setBackgroundColor(getResources().getColor(R.color.secondary));
+                modifiedTView = tView;
+
+                ConstraintSet constraintSet = new ConstraintSet();
+                constraintSet.clone(constraintLayout);
+                constraintSet.clear(addset.getId(), ConstraintSet.LEFT);
+                constraintSet.connect(cancel.getId(), ConstraintSet.LEFT, repsm.getId(), ConstraintSet.LEFT);
+                constraintSet.applyTo(constraintLayout);
+
                 return false;
             }
         });
-        tView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if(!b) {
-                    inEditMode = false;
-                    tView.setBackgroundColor(getResources().getColor(R.color.secondary));
-                }
-            }
-        });
         float scale = getResources().getDisplayMetrics().density;
-        tView.setPadding((int) (40 * scale + 0.5f), 0, 0, 0);
+        tView.setPadding( (int)(20 * scale + 0.5f), (int)(1 * scale + 0.5f), 0, (int)(1 * scale + 0.5f) );
         scroll[pos].addView(tView, (new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT)));
     }
+    private void exitEditMode() {
+        inEditMode = false;
+        Log.i(TAG, "Exit edit mode");
+        cancel.setVisibility(View.INVISIBLE);
+        modifiedTView.setBackgroundColor(getResources().getColor(R.color.secondary));
+        addset.setText(getResources().getText(R.string.add_set));
+        updateEditTexts(Data.getLastSet(selectedExerciseId));
 
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(constraintLayout);
+        constraintSet.connect(addset.getId(), ConstraintSet.LEFT, repsm.getId(), ConstraintSet.LEFT);
+        constraintSet.applyTo(constraintLayout);
+    }
     private void createRows(int pos) {
         for (Day day : Data.getDays()) {
             List<Set> sets = day.getSets();
             int x = 0;
             for (int i = 0; i < sets.size(); i++) {
-//                Log.i(TAG, "pos: " + pos);
-//                Log.i(TAG, "i: " + i);
-//                Log.i(TAG, "id: " + sets.get(i).getExerciseId());
                 if (sets.get(i).getExerciseId() == pos && x == 0) {
                     x++;
                     createDateRow(pos, day.getDate());
@@ -107,7 +123,12 @@ public class Workout extends Activity {
              */
         }
     }
-
+    private void updateEditTexts(Set s) {
+        if(s != null) {
+            weight.setText(Float.toString(s.getWeight()));
+            reps.setText(Integer.toString(s.getReps()));
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +139,7 @@ public class Workout extends Activity {
         days = Data.getDays();
 
         scroll = new LinearLayout[Exercises.getCount()];
-        newDatePrinted = new boolean[Exercises.getCount()];
+        constraintLayout = findViewById(R.id.constraintlayout);
 
         tabLayout = findViewById(R.id.dots);
         for (int i = 0; i < Exercises.getCount(); i++) {
@@ -132,35 +153,26 @@ public class Workout extends Activity {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 //Log.i(TAG, "Scrolled: " + Integer.toString(position));
                 selectedExerciseId = position;
-                Set lastSet = Data.getLastSet(position);
-                if(lastSet != null) {
-                    weight.setText(Float.toString(lastSet.getWeight()));
-                    reps.setText(Integer.toString(lastSet.getReps()));
-                }
+                updateEditTexts(Data.getLastSet(position));
             }
-
             @Override
             public void onPageSelected(int position) {
                 //Log.i(TAG, "Selected: " + Integer.toString(position));
             }
-
             @Override
             public void onPageScrollStateChanged(int state) {
                 //Log.i(TAG, "ScrollStateChanged: " + Integer.toString(state));
             }
         });
-
         viewPager.setAdapter(new PagerAdapter() {
             @Override
             public int getCount() {
                 return Exercises.getCount();
             }
-
             @Override
             public boolean isViewFromObject(View view, Object object) {
                 return object == view;
             }
-
             @Override
             public Object instantiateItem(ViewGroup container, int position) {
                 Log.i(TAG, "instantiateItem");
@@ -169,8 +181,14 @@ public class Workout extends Activity {
                 layout.setId(View.generateViewId());
                 container.addView(layout);
 
-                tView = new TextView(container.getContext());
+                ImageView iView = new ImageView(container.getContext());
+                iView.setImageDrawable(Exercises.getDrawablee(position));
+                iView.setId(View.generateViewId());
+                iView.setAdjustViewBounds(true);
+
+                TextView tView = new TextView(container.getContext());
                 tView.setText(Exercises.getName(position));
+                tView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
                 tView.setId(View.generateViewId());
 
                 ScrollView sView = new ScrollView(container.getContext());
@@ -180,18 +198,29 @@ public class Workout extends Activity {
                 scroll[position].setOrientation(LinearLayout.VERTICAL);
                 sView.addView(scroll[position]);
 
-                layout.addView(tView, 0);
-                layout.addView(sView, 1);
+                layout.addView(iView, 0);
+                layout.addView(tView, 1);
+                layout.addView(sView, 2);
                 ConstraintSet set = new ConstraintSet();
                 set.clone(layout);
 
                 set.constrainDefaultHeight(layout.getId(), container.getHeight());
                 set.constrainDefaultWidth(layout.getId(), container.getWidth());
 
-                set.centerVertically(tView.getId(), layout.getId());
-                set.connect(tView.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT, 8);
-                set.connect(tView.getId(), ConstraintSet.RIGHT, layout.getId(), ConstraintSet.RIGHT, 8);
-                set.setHorizontalBias(tView.getId(), 0.15f);
+                float scale = getResources().getDisplayMetrics().density;
+
+
+                set.connect(iView.getId(), ConstraintSet.TOP, layout.getId(), ConstraintSet.TOP);
+                set.connect(iView.getId(), ConstraintSet.BOTTOM, layout.getId(), ConstraintSet.BOTTOM);
+                set.connect(iView.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT);
+                set.connect(iView.getId(), ConstraintSet.RIGHT, sView.getId(), ConstraintSet.LEFT);
+                set.constrainWidth(iView.getId(), (int)(160 * scale + 0.5f));
+                set.setHorizontalBias(iView.getId(), 0.3f);
+                set.setVerticalBias(iView.getId(), 0.4f);
+
+                set.connect(tView.getId(), ConstraintSet.TOP, iView.getId(), ConstraintSet.BOTTOM,32);
+                set.connect(tView.getId(), ConstraintSet.LEFT, iView.getId(), ConstraintSet.LEFT);
+                set.connect(tView.getId(), ConstraintSet.RIGHT, iView.getId(), ConstraintSet.RIGHT);
 
                 set.constrainDefaultWidth(sView.getId(), container.getWidth() / 2);
                 set.connect(sView.getId(), ConstraintSet.LEFT, layout.getId(), ConstraintSet.LEFT, 8);
@@ -246,16 +275,33 @@ public class Workout extends Activity {
 
                 float weightF = Float.valueOf(weight.getText().toString());
                 int repsI = Integer.valueOf(reps.getText().toString());
-
-                Log.i(TAG,Boolean.toString(shouldAddDateRow[selectedExerciseId]));
-                if(shouldAddDateRow[selectedExerciseId]) {
-                    createDateRow(selectedExerciseId, now);
-                    shouldAddDateRow[selectedExerciseId] = false;
-                }
-
                 Set set = new Set(selectedExerciseId, weightF, repsI);
-                createWorkoutRow(selectedExerciseId, set);
-                days.get(index[0]).addSet(set, true);
+
+                if(!inEditMode) {
+                    Log.i(TAG, Boolean.toString(shouldAddDateRow[selectedExerciseId]));
+                    if (shouldAddDateRow[selectedExerciseId]) {
+                        createDateRow(selectedExerciseId, now);
+                        shouldAddDateRow[selectedExerciseId] = false;
+                    }
+                    createWorkoutRow(selectedExerciseId, set);
+                    days.get(index[0]).addSet(set, true);
+                } else {
+                    modifiedSet.setReps(repsI);
+                    modifiedSet.setWeight(weightF);
+                    modifiedTView.setText(String.format(LOCALE, "%sx%d",
+                            Data.trimZeros(weightF),
+                            repsI));
+                    Data.rewriteFile();
+                    exitEditMode();
+                }
+            }
+        });
+
+        cancel = findViewById(R.id.cancel);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                exitEditMode();
             }
         });
 
@@ -269,7 +315,6 @@ public class Workout extends Activity {
                 else if (i == R.id.increment1) increment = 2.5f;
                 else if (i == R.id.increment2) increment = 5f;
                 else if (i == R.id.increment3) increment = 10f;
-
             }
         });
 

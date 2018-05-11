@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -45,6 +46,29 @@ public class Data {
             e.printStackTrace();
         }
         Log.i(TAG,"File written to " + file);
+    }
+    protected static void rewriteFile() {
+        if (file.exists()) {
+            try {
+                file.delete();
+                file.createNewFile();
+                FileOutputStream f = new FileOutputStream(file,true);
+                PrintWriter pw = new PrintWriter(f);
+                for(Day day : days) {
+                    pw.println(DATE + ";" + new SimpleDateFormat("YYYY/MM/dd", LOCALE).format(day.getDate().getTime()));
+                    if (day.getBodyWeight() != 0.0f) pw.println(BODY_WEIGHT + ";" + day.getBodyWeight());
+                    for(Set set : day.getSets()) {
+                        pw.println(WORKOUT_DATA + ";" + set.getExerciseId() + ";" + set.getWeight() + "x" + set.getReps());
+                    }
+                }
+                pw.flush();
+                pw.close();
+                f.close();
+                Log.i(TAG, "File rewrited");
+            } catch (IOException e) {
+                Log.w(TAG, "Coś się spierdoliło");
+            }
+        }
     }
     protected static void loadData() {
         if (days != null) days.clear();
@@ -95,7 +119,7 @@ public class Data {
                         case BODY_WEIGHT:
                             Log.i(TAG, "case BODY_WEIGHT");
 
-                            days.get(currDay).setBodyWeight(Integer.parseInt(str.substring(ind+1,str.length())), false);
+                            days.get(currDay).setBodyWeight(Float.parseFloat(str.substring(ind+1,str.length())), false);
 
                             break;
                     }

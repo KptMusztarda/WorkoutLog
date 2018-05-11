@@ -4,6 +4,7 @@ package me.kptmusztarda.ultimatediary;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 public class Exercises extends Application{
 
     private static List<String> names;
+    private static List<Drawable> drawables;
     private Context context;
     private Resources res;
 
@@ -30,6 +32,17 @@ public class Exercises extends Application{
             add(res.getString(R.string.exercise7));
             add(res.getString(R.string.exercise8));
         }};
+        drawables = new ArrayList<Drawable>() {{
+            add(res.getDrawable(R.drawable.deadlift));
+            add(res.getDrawable(R.drawable.deadlift));
+            add(res.getDrawable(R.drawable.deadlift));
+            add(res.getDrawable(R.drawable.deadlift));
+            add(res.getDrawable(R.drawable.deadlift));
+            add(res.getDrawable(R.drawable.deadlift));
+            add(res.getDrawable(R.drawable.deadlift));
+            add(res.getDrawable(R.drawable.deadlift));
+            add(res.getDrawable(R.drawable.deadlift));
+        }};
     }
 
     protected static int getCount() {
@@ -37,5 +50,8 @@ public class Exercises extends Application{
     }
     protected static String getName(int id) {
         return names.get(id);
+    }
+    protected static Drawable getDrawablee(int id) {
+        return drawables.get(id);
     }
 }
