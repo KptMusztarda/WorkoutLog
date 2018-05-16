@@ -1,6 +1,7 @@
-package me.kptmusztarda.ultimatediary;
+package me.kptmusztarda.workoutlog;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,7 +21,6 @@ import java.util.Locale;
 public class Data {
 
     private static List<Day> days = new ArrayList<>();
-    private static int setId = 0;
     private static String path;
     private static String name;
 
@@ -55,10 +55,11 @@ public class Data {
                 FileOutputStream f = new FileOutputStream(file,true);
                 PrintWriter pw = new PrintWriter(f);
                 for(Day day : days) {
-                    pw.println(DATE + ";" + new SimpleDateFormat("YYYY/MM/dd", LOCALE).format(day.getDate().getTime()));
+                    List<Set> sets= day.getSets();
+                    if(sets.size() > 0) pw.println(DATE + ";" + new SimpleDateFormat("YYYY/MM/dd", LOCALE).format(day.getDate().getTime()));
                     if (day.getBodyWeight() != 0.0f) pw.println(BODY_WEIGHT + ";" + day.getBodyWeight());
-                    for(Set set : day.getSets()) {
-                        pw.println(WORKOUT_DATA + ";" + set.getExerciseId() + ";" + set.getWeight() + "x" + set.getReps());
+                    for(Set set : sets) {
+                        if(set.getReps() > 0 && set != null) pw.println(WORKOUT_DATA + ";" + set.getExerciseId() + ";" + set.getWeight() + "x" + set.getReps());
                     }
                 }
                 pw.flush();
@@ -171,17 +172,14 @@ public class Data {
         }
         return toReturn;
     }
-    protected static void incrementSetId() {setId++;}
-    protected static int getLastSetId() {return setId;}
-    protected static Set getSetById(int id) {
-        Set toReturn = null;
+    protected static void deleteSet(int id) {
         outerLoop:
-        for(Day day : days) {
-            for (Set set : day.getSets()) if(set.getId() == id) {
-                toReturn = set;
+        for(int i=days.size()-1; i>=0; i--) {
+            List<Set> sets = days.get(i).getSets();
+            for (int j = sets.size()-1; j>=0; j--) if(sets.get(j).getId() == id) {
+                sets.remove(j);
                 break outerLoop;
             }
         }
-        return toReturn;
     }
 }

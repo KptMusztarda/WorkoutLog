@@ -3,4 +3,5 @@
     <color name="primary">#585858</color>
     <color name="secondary">#6c6c6c</color>
     <color name="accent">#ff772e</color>
+    <color name="button_pressed">#ff273c</color>
 </resources>

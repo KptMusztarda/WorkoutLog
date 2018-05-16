@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Ultimate Diary</string>
+    <string name="app_name">Workout Log</string>
     <string name="tab1">Weight</string>
     <string name="tab2">Workout</string>
     <string name="tab3">IDK</string>
@@ -18,4 +18,6 @@
     <string name="exercise6">Dips</string>
     <string name="exercise7">Triceps</string>
     <string name="exercise8">Biceps</string>
+    <string name="training_a">Training A</string>
+    <string name="training_b">Training B</string>
 </resources>

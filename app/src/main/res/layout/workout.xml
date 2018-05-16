@@ -2,19 +2,23 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintlayout"
+    android:id="@+id/constraintlayout_workout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary"
     android:focusableInTouchMode="true">
 
-    <Button
+    <ImageButton
         android:id="@+id/addset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
-        android:text="@string/add_set"
+        android:adjustViewBounds="false"
+        android:background="@android:color/transparent"
+        android:cropToPadding="false"
+        android:scaleType="fitXY"
+        android:src="@drawable/confirm_press_animation"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/repsplus"
         app:layout_constraintStart_toStartOf="@+id/repsminus"
@@ -48,45 +52,55 @@
         app:layout_constraintStart_toStartOf="@+id/weight"
         app:layout_constraintTop_toBottomOf="@+id/weight" />
 
-    <Button
+    <ImageButton
         android:id="@+id/weightplus"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
-        android:text="+"
+        android:adjustViewBounds="false"
+        android:background="@android:color/transparent"
+        android:cropToPadding="false"
+        android:scaleType="fitXY"
+        android:src="@drawable/plus_press_animation"
         app:layout_constraintBottom_toBottomOf="@+id/weight"
         app:layout_constraintStart_toEndOf="@+id/weight"
         app:layout_constraintTop_toTopOf="@+id/weight"
         app:layout_constraintVertical_bias="0.0" />
 
-    <Button
+    <ImageButton
         android:id="@+id/repsplus"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
-        android:text="+"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/plus_press_animation"
         app:layout_constraintBottom_toBottomOf="@+id/reps"
         app:layout_constraintStart_toEndOf="@+id/reps"
         app:layout_constraintTop_toTopOf="@+id/reps"
         app:layout_constraintVertical_bias="0.0" />
 
-    <Button
+    <ImageButton
         android:id="@+id/weightminus"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginEnd="16dp"
-        android:text="-"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/minus_press_animation"
         app:layout_constraintBottom_toBottomOf="@+id/weight"
         app:layout_constraintEnd_toStartOf="@+id/weight"
         app:layout_constraintTop_toTopOf="@+id/weight"
         app:layout_constraintVertical_bias="0.0" />
 
-    <Button
+    <ImageButton
         android:id="@+id/repsminus"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginEnd="16dp"
-        android:text="-"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/minus_press_animation"
         app:layout_constraintBottom_toBottomOf="@+id/reps"
         app:layout_constraintEnd_toStartOf="@+id/reps"
         app:layout_constraintTop_toTopOf="@+id/reps"
@@ -170,15 +184,32 @@
             android:text="@string/increment3" />
     </RadioGroup>
 
-    <Button
+    <ImageButton
         android:id="@+id/cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginEnd="8dp"
-        android:text="@android:string/cancel"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/cancel_press_animation"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/addset"
         app:layout_constraintEnd_toStartOf="@+id/addset"
         app:layout_constraintTop_toTopOf="@+id/addset" />
+
+    <ImageButton
+        android:id="@+id/delete"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/delete_press_animation"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/cancel"
+        app:layout_constraintEnd_toStartOf="@+id/cancel"
+        app:layout_constraintTop_toTopOf="@+id/cancel" />
 
 </android.support.constraint.ConstraintLayout>

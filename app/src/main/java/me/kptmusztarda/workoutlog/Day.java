@@ -1,4 +1,4 @@
-package me.kptmusztarda.ultimatediary;
+package me.kptmusztarda.workoutlog;
 
 
 import java.text.SimpleDateFormat;
@@ -27,7 +27,6 @@ public class Day{
     }
     protected void addSet(Set set, boolean append) {
         sets.add(set);
-        Data.incrementSetId();
         if(append) Data.appendToFile(1,set.getExerciseId() + ";" + set.getWeight() + "x" + set.getReps());
     }
     protected List<Set> getSets() {
@@ -36,14 +35,14 @@ public class Day{
     protected Set getLastSet(int exerciseId) {
         return sets.get(exerciseId);
     }
-    protected void modifySet(int i, Set set) {
-        sets.set(i, set);
-    }
     protected void setBodyWeight(float bodyWeight, boolean append) {
         this.bodyWeight = bodyWeight;
         if(append) Data.appendToFile(2, Data.trimZeros(bodyWeight));
     }
     protected float getBodyWeight() {
         return bodyWeight;
+    }
+    protected void deleteSet(int id) {
+        sets.remove(id);
     }
 }
